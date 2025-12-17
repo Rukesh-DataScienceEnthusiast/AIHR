@@ -7,6 +7,7 @@ import os
 import certifi
 from dotenv import load_dotenv
 from urllib.parse import quote_plus
+import streamlit as st
 
 # Load environment variables from .env file
 load_dotenv()
