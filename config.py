@@ -12,7 +12,8 @@ from urllib.parse import quote_plus
 load_dotenv()
 
 # ============== GROQ AI CONFIGURATION ==============
-GROQ_API_KEY = os.getenv('GROQ_API_KEY', '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')
+# GROQ_API_KEY = os.getenv('GROQ_API_KEY')
+GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
 GROQ_MODEL = "llama-3.3-70b-versatile"
 
 # Rate Limiting (Groq Free Tier) - ADJUSTED FOR SAFETY
@@ -30,10 +31,14 @@ BATCH_DELAY = 60  # Wait 60 seconds between batches if needed
 # ============== MONGODB CONFIGURATION ==============
 
 # Get credentials from environment (with fallback to hardcoded values)
-MONGO_USERNAME = os.getenv('MONGO_USERNAME', 'rukeshsahayarajan_db_user')
-MONGO_PASSWORD = os.getenv('MONGO_PASSWORD', 'Rukesh1405')
-MONGO_CLUSTER = os.getenv('MONGO_CLUSTER', 'test.slusmul.mongodb.net')
-DATABASE_NAME = os.getenv('MONGO_DATABASE', 'resume_match_db_v2')
+# MONGO_USERNAME = os.getenv('MONGO_USERNAME', 'rukeshsahayarajan_db_user')
+MONGO_USERNAME = st.secrets["MONGO_USERNAME"]
+# MONGO_PASSWORD = os.getenv('MONGO_PASSWORD', 'Rukesh1405')
+MONGO_PASSWORD = st.secrets["MONGO_PASSWORD"]
+# MONGO_CLUSTER = os.getenv('MONGO_CLUSTER', 'test.slusmul.mongodb.net')
+MONGO_CLUSTER = st.secrets["MONGO_CLUSTER"]
+# DATABASE_NAME = os.getenv('MONGO_DATABASE', 'resume_match_db_v2')
+DATABASE_NAME = st.secrets["MONGO_DATABASE"]
 
 # URL-encode username and password to handle special characters
 username_encoded = quote_plus(MONGO_USERNAME)
@@ -46,8 +51,8 @@ MONGO_URI = (
 )
 
 # Alternative: Use environment variable directly if provided
-if os.getenv('MONGO_URI'):
-    MONGO_URI = os.getenv('MONGO_URI')
+# if os.getenv('MONGO_URI'):
+#     MONGO_URI = os.getenv('MONGO_URI')
 
 # Collections
 COLLECTION_JD = "job_descriptions"
