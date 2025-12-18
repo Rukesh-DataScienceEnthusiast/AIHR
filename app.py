@@ -473,21 +473,51 @@ def show_resume_matching_page():
             with st.expander("Adjust Evaluation Weights (Optional)", expanded=False):
                 st.info("Total must equal 100%")
 
-                weights = rubrics.get('weights', {})
+                # Existing weights from DB
+                existing_weights = rubrics.get('weights', {})
 
                 col1, col2 = st.columns(2)
 
                 with col1:
-                    skills_weight = st.slider("Skills Weight (%)", 0, 100, int(weights.get('skills', 25)), key='skills_slider')
-                    tools_weight = st.slider("Tools Weight (%)", 0, 100, int(weights.get('tools', 25)), key='tools_slider')
-                    experience_weight = st.slider("Experience Weight (%)", 0, 100, int(weights.get('experience', 20)), key='exp_slider')
-                    education_weight = st.slider("Education Weight (%)", 0, 100, int(weights.get('education', 5)), key='edu_slider')
+                    skills_weight = st.slider(
+                        "Skills Weight (%)", 0, 100,
+                        int(existing_weights.get('skills', 25)),
+                        key='skills_slider'
+                    )
+                    tools_weight = st.slider(
+                        "Tools Weight (%)", 0, 100,
+                        int(existing_weights.get('tools', 25)),
+                        key='tools_slider'
+                    )
+                    experience_weight = st.slider(
+                        "Experience Weight (%)", 0, 100,
+                        int(existing_weights.get('experience', 20)),
+                        key='exp_slider'
+                    )
+                    education_weight = st.slider(
+                        "Education Weight (%)", 0, 100,
+                        int(existing_weights.get('education', 5)),
+                        key='edu_slider'
+                    )
 
                 with col2:
-                    projects_weight = st.slider("Projects Weight (%)", 0, 100, int(weights.get('projects', 15)), key='proj_slider')
-                    certifications_weight = st.slider("Certifications Weight (%)", 0, 100, int(weights.get('certifications', 5)), key='cert_slider')
-                    profile_weight = st.slider("Profile Quality Weight (%)", 0, 100, int(weights.get('profile_quality', 5)), key='prof_slider')
+                    projects_weight = st.slider(
+                        "Projects Weight (%)", 0, 100,
+                        int(existing_weights.get('projects', 15)),
+                        key='proj_slider'
+                    )
+                    certifications_weight = st.slider(
+                        "Certifications Weight (%)", 0, 100,
+                        int(existing_weights.get('certifications', 5)),
+                        key='cert_slider'
+                    )
+                    profile_weight = st.slider(
+                        "Profile Quality Weight (%)", 0, 100,
+                        int(existing_weights.get('profile_quality', 5)),
+                        key='prof_slider'
+                    )
 
+                # New values from UI
                 new_weights = {
                     'skills': skills_weight,
                     'tools': tools_weight,
@@ -503,14 +533,18 @@ def show_resume_matching_page():
                 if total_weight != 100:
                     st.error(f"Total weight is {total_weight}%. Must equal 100%!")
                 else:
-                    st.success(f"Total weight = 100%")
+                    st.success("Total weight = 100%")
 
-                if total_weight == 100 and st.button("Save Rubrics", type="secondary"):
+                # Save only if changed
+                if st.button(
+                    "Save Rubrics",
+                    type="secondary",
+                    disabled=(total_weight != 100 or new_weights == existing_weights)
+                ):
                     try:
                         rubrics['weights'] = new_weights
                         db.save_rubrics(jd_id, rubrics)
                         st.success("Rubrics updated successfully!")
-                        st.rerun()
                     except Exception as e:
                         st.error(f"Error saving rubrics: {str(e)}")
 
@@ -521,13 +555,12 @@ def show_resume_matching_page():
 
             upload_mode = st.radio(
                 "Choose upload mode:",
-                ["Upload Files", "Folder Path"],
+                ["Upload Files"],#["Upload Files", "Folder Path"]
                 horizontal=True
             )
 
             resume_files = []
             folder_path = None
-
             if upload_mode == "Upload Files":
                 uploaded_files = st.file_uploader(
                     "Upload Resume Files (PDF/DOCX)",
